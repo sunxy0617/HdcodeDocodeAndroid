@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DetailActivity"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4.0dp"
+        android:layout_marginBottom="6.0dp"
+        android:gravity="center"
+        android:text="@string/detail_title"
+        android:textSize="28sp"
+        android:textStyle="normal" />
+
+    <TextView
+        android:id="@+id/textMessage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="23.5dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/text_border"
+        android:enabled="true"
+        android:focusable="true"
+        android:textIsSelectable="true"
+        android:longClickable="true"
+        android:hint="扫码信息展示"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#000000" />
+
+    <Button
+        android:id="@+id/butScan"
+        android:layout_width="match_parent"
+        android:layout_height="71.0dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="20dp"
+        android:background="#063265"
+        android:text="继续扫码"
+        android:textColor="#ffffffff"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/butSpeech"
+        android:layout_width="match_parent"
+        android:layout_height="71.0dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginRight="20dp"
+        android:background="#245bb1"
+        android:text="语音播报"
+        android:textColor="#ffffffff"
+        android:textSize="20sp" />
+</LinearLayout>
