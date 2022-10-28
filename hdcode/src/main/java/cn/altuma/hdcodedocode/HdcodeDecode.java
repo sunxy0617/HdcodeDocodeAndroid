@@ -35,25 +35,10 @@ public class HdcodeDecode {
 				}
 			}
 		}
-		NormalImage standFourCode = twoDimensionalCode.getStandFourCode();
-        if (standFourCode != null)
+		NormalImage standCode = twoDimensionalCode.getStandCode();
+        if (standCode != null)
         {
-            byte[] data = fourDecode.decode(standFourCode,hdInfo);
-            if (data != null)
-            {
-            	try {
-					String words = new String(data, "GBK");
-					return words;
-				} catch (Exception e) {
-					return null;
-				}
-            }
-        }
-        
-        NormalImage standEightCode = twoDimensionalCode.getStandEightCode();
-        if (standEightCode != null)
-        {
-            byte[] data = eightDecode.decode(standEightCode,hdInfo);
+            byte[] data = fourDecode.decode(standCode,hdInfo);
             if (data != null)
             {
             	try {

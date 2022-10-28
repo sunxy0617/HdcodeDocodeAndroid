@@ -72,10 +72,10 @@ public class TumaCode {
 
 		if (standardCodeWidth <= 0 || standardCodeWidth > maxWidth)// 高和宽计算有误，返回
 			return false;
-		return getStandCode();
+		return calculateStandCode();
 	}
 
-	private boolean getStandCode() {
+	private boolean calculateStandCode() {
 		int n = 8;
 		double[] xishu = new double[8];
 		double x1, y1, u1, v1; // x、y表示原图中定位点位置，u、v表示还原后定位点位置
@@ -454,116 +454,6 @@ public class TumaCode {
 		}
 	}
 
-    private static int _fourColorIndex = 0;
-	private void ConventTo4ColorImage2(int[] pixsin, int[] pixsout, int w, int h)// 旧的四色算法
-	{
-        int blackLeftUp = pixsin[8];
-        int blackRightDown = pixsin[pixsin.length - 1];
-        int rCorrect = ((blackLeftUp >> 16) & 0xff) + ((blackRightDown >> 16) & 0xff) >> 1;
-        int gCorrect = ((blackLeftUp >> 8) & 0xff) + ((blackRightDown >> 8) & 0xff) >> 1;
-        int bCorrect = (blackLeftUp & 0xff) + (blackRightDown & 0xff) >> 1;
-        int maxRgb = Max(rCorrect, Max(gCorrect, bCorrect));
-        int i = 0;
-        _fourColorIndex ^= 1;
-		for (int pix : pixsin) {
-            int[] rgb = new int[3];
-            int colorValue;
-            rgb[0] = ((pix >> 16) & 0xff) - rCorrect;
-            rgb[1] = ((pix >> 8) & 0xff) - gCorrect;
-            rgb[2] = (pix & 0xff) - bCorrect;
-
-            int[] order = new int[3];
-            getMaxColor(rgb, order);
-
-            if (rgb[order[0]] < (_fourColorIndex & 1) * 15 + maxRgb/*45*/)
-            {
-                colorValue = 0xff << 24;
-            }
-            else if (rgb[order[0]] * 2 > rgb[order[1]] + rgb[order[2]] + 24)// 更新于20190220
-            {
-                colorValue = (0xff << 24) | (0xff << (2 - order[0]) * 8);
-            } else {
-                if (rgb[order[2]] > 128)
-                    colorValue = (0xff << 24) | 0xffffff;
-                else
-                    colorValue = 0xff << 24;
-            }
-			pixsout[i] = colorValue;
-			i++;
-		}
-	}
-    private int Max(int a, int b)
-    {
-        return a > b ? a : b;
-    }
-	private void getMaxColor(int[] rgb, int[] order)// 获取三个数大小顺序
-	{
-		int r = rgb[0];
-		int g = rgb[1];
-		int b = rgb[2];
-		int max, mid, min;
-		if (r > g) {
-			if (r > b) {
-				if (g > b) {
-					max = 0;
-					mid = 1;
-					min = 2;
-				} else {
-					max = 0;
-					mid = 2;
-					min = 1;
-				}
-			} else {
-				max = 2;
-				mid = 0;
-				min = 1;
-			}
-		} else {
-			if (r < b) {
-				if (g < b) {
-					max = 2;
-					mid = 1;
-					min = 0;
-				} else {
-					max = 1;
-					mid = 2;
-					min = 0;
-				}
-			} else {
-				max = 1;
-				mid = 0;
-				min = 2;
-			}
-		}
-		order[0] = max;
-		order[1] = mid;
-		order[2] = min;
-	}
-
-	private void ConventTo8ColorImage(int[] pixsin, int[] pixsout, int w, int h) {
-		int i;
-		int length = w * h;
-		byte[] pixsR = new byte[length];
-		byte[] pixsG = new byte[length];
-		byte[] pixsB = new byte[length];
-
-		i = 0;
-		for (int pix : pixsin) {
-			pixsR[i] = (byte) ((pix >> 16) & 0xff);
-			pixsG[i] = (byte) ((pix >> 8) & 0xff);
-			pixsB[i] = (byte) ((pix >> 0) & 0xff);
-			i++;
-		}
-		ConventToBinImage(pixsR, pixsR, w, h);
-		ConventToBinImage(pixsG, pixsG, w, h);
-		ConventToBinImage(pixsB, pixsB, w, h);
-
-		for (i = 0; i < length; i++) {
-			pixsout[i] = (0xff << 24) | ((pixsR[i]&0xff) << 16) | ((pixsG[i]&0xff) << 8) | (pixsB[i]&0xff);
-		}
-		// return true;
-	}
-
 	/// <summary>
 	/// 降噪算法
 	/// </summary>
@@ -653,6 +543,11 @@ public class TumaCode {
 
 	}
 
+	NormalImage getStandCode()
+	{
+		return StandardCode;
+	}
+
 	GrayImage getStandBinCode() {
 		GrayImage binCode = new GrayImage();
 		byte[] binPixs = new byte[StandardCode.Width * StandardCode.Height];
@@ -664,25 +559,6 @@ public class TumaCode {
 		return binCode;
 	}
 
-	NormalImage getStandFourCode() {
-		NormalImage binCode = new NormalImage();
-		int[] binPixs = new int[StandardCode.Width * StandardCode.Height];
-		binCode.Width = StandardCode.Width;
-		binCode.Height = StandardCode.Height;
-		ConventTo4ColorImage2(StandardCode.Pixs, binPixs, StandardCode.Width, StandardCode.Height);
-		binCode.Pixs = binPixs;
-		return binCode;
-	}
-
-	NormalImage getStandEightCode() {
-		NormalImage binCode = new NormalImage();
-		int[] binPixs = new int[StandardCode.Width * StandardCode.Height];
-		binCode.Width = StandardCode.Width;
-		binCode.Height = StandardCode.Height;
-		ConventTo8ColorImage(StandardCode.Pixs, binPixs, StandardCode.Width, StandardCode.Height);
-		binCode.Pixs = binPixs;
-		return binCode;
-	}
 
 	private void Gauss(int n, double[][] a, double[] x)// 高斯消元法解方程组,n为未知数个数，a为方程组增广矩阵
 	{
