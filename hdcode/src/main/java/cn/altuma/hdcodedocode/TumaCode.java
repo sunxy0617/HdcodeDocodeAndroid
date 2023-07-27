@@ -374,7 +374,7 @@ public class TumaCode {
     /// <param name="binarizeMethodIndex">0,1,2性能越来越差，二值化效果越来越好</param>
     /// <returns>二值化结果</returns>
     private byte[] ConventToBinImage(int[] rgbPixs, int width, int height) {
-        return HybridBinarizer.BinarizeEntireImage(rgbPixs, width, height);
+        return HybridBinarizer.binarizeEntireImage(rgbPixs, width, height);
     }
 
     /// <summary>

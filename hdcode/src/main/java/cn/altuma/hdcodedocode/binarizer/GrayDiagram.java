@@ -1,5 +1,8 @@
 package cn.altuma.hdcodedocode.binarizer;
 
+/**
+ * @author Coder_Rain
+ */
 public class GrayDiagram {
     private final static int RChannelWeight = 19562;
     private final static int GChannelWeight = 38550;

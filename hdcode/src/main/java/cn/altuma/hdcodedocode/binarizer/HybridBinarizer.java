@@ -2,16 +2,17 @@ package cn.altuma.hdcodedocode.binarizer;
 
 /**
  * 混合二值化算法
+ * @author Coder_Rain
  */
 public class HybridBinarizer {
-    private final static int BlockSizePower = 3;
-    private final static int BlockSize = 1 << BlockSizePower; // ...0100...00
-    private final static int BlockSizeMask = BlockSize - 1; // ...0011...11
+    private final static int BLOCK_SIZE_POWER = 3;
+    private final static int BLOCK_SIZE = 1 << BLOCK_SIZE_POWER;
+    private final static int BLOCK_SIZE_MASK = BLOCK_SIZE - 1;
     /**
      * 最小支持的二值化尺寸
      */
-    private final static int MinimumDimension = 40;
-    private final static int MinDynamicRange = 24;
+    private final static int MINIMUM_DIMENSION = 40;
+    private final static int MIN_DYNAMIC_RANGE = 24;
 
 
     /// <summary>
@@ -21,9 +22,9 @@ public class HybridBinarizer {
     /// <param name="width">宽度</param>
     /// <param name="height">高度</param>
     /// <returns>二值化图片</returns>
-    public static byte[] BinarizeEntireImage(int[] rgbImage, int width, int height) {
+    public static byte[] binarizeEntireImage(int[] rgbImage, int width, int height) {
         byte[] luminances = GrayDiagram.CalculateLuminanceRgb24(rgbImage);
-        return BinarizeEntireImage(luminances, width, height);
+        return binarizeEntireImage(luminances, width, height);
     }
 
     /// <summary>
@@ -33,28 +34,28 @@ public class HybridBinarizer {
     /// <param name="width">宽度</param>
     /// <param name="height">高度</param>
     /// <returns>二值化图片</returns>
-    public static byte[] BinarizeEntireImage(byte[] grayImage, int width, int height) {
-        if (width < MinimumDimension || height < MinimumDimension)
+    public static byte[] binarizeEntireImage(byte[] grayImage, int width, int height) {
+        if (width < MINIMUM_DIMENSION || height < MINIMUM_DIMENSION)
             return null;
-        int subWidth = width >> BlockSizePower;
-        if ((width & BlockSizeMask) != 0) {
+        int subWidth = width >> BLOCK_SIZE_POWER;
+        if ((width & BLOCK_SIZE_MASK) != 0) {
             subWidth++;
         }
 
-        int subHeight = height >> BlockSizePower;
-        if ((height & BlockSizeMask) != 0) {
+        int subHeight = height >> BLOCK_SIZE_POWER;
+        if ((height & BLOCK_SIZE_MASK) != 0) {
             subHeight++;
         }
 
-        int[][] blackPoints = CalculateBlackPoints(grayImage, subWidth, subHeight, width, height);
+        int[][] blackPoints = calculateBlackPoints(grayImage, subWidth, subHeight, width, height);
 
         byte[] binImage = new byte[width * height];
-        CalculateThresholdForBlock(grayImage, subWidth, subHeight, width, height, blackPoints, binImage);
+        calculateThresholdForBlock(grayImage, subWidth, subHeight, width, height, blackPoints, binImage);
         return binImage;
     }
 
 
-    private static int[][] CalculateBlackPoints(byte[] grayImage, int subWidth, int subHeight, int width,
+    private static int[][] calculateBlackPoints(byte[] grayImage, int subWidth, int subHeight, int width,
                                                 int height) {
         int[][] blackPoints = new int[subHeight][];
         for (int i = 0; i < subHeight; i++) {
@@ -62,15 +63,15 @@ public class HybridBinarizer {
         }
 
         for (int y = 0; y < subHeight; y++) {
-            int yOffset = y << BlockSizePower;
-            int maxYOffset = height - BlockSize;
+            int yOffset = y << BLOCK_SIZE_POWER;
+            int maxYOffset = height - BLOCK_SIZE;
             if (yOffset > maxYOffset) {
                 yOffset = maxYOffset;
             }
 
             for (int x = 0; x < subWidth; x++) {
-                int xOffset = x << BlockSizePower;
-                int maxXOffset = width - BlockSize;
+                int xOffset = x << BLOCK_SIZE_POWER;
+                int maxXOffset = width - BLOCK_SIZE;
                 if (xOffset > maxXOffset) {
                     xOffset = maxXOffset;
                 }
@@ -78,8 +79,8 @@ public class HybridBinarizer {
                 int sum = 0;
                 int min = 0xFF;
                 int max = 0;
-                for (int yy = 0, offset = yOffset * width + xOffset; yy < BlockSize; yy++, offset += width) {
-                    for (int xx = 0; xx < BlockSize; xx++) {
+                for (int yy = 0, offset = yOffset * width + xOffset; yy < BLOCK_SIZE; yy++, offset += width) {
+                    for (int xx = 0; xx < BLOCK_SIZE; xx++) {
                         int pixel = grayImage[offset + xx] & 0xFF;
                         // still looking for good contrast
                         sum += pixel;
@@ -93,18 +94,18 @@ public class HybridBinarizer {
                     }
 
                     // short-circuit min/max tests once dynamic range is met
-                    if (max - min > MinDynamicRange) {
+                    if (max - min > MIN_DYNAMIC_RANGE) {
                         // finish the rest of the rows quickly
-                        for (yy++, offset += width; yy < BlockSize; yy++, offset += width) {
-                            for (int xx = 0; xx < BlockSize; xx++) {
+                        for (yy++, offset += width; yy < BLOCK_SIZE; yy++, offset += width) {
+                            for (int xx = 0; xx < BLOCK_SIZE; xx++) {
                                 sum += grayImage[offset + xx] & 0xFF;
                             }
                         }
                     }
                 }
 
-                int average = sum >> (BlockSizePower * 2);
-                if (max - min <= MinDynamicRange) {
+                int average = sum >> (BLOCK_SIZE_POWER * 2);
+                if (max - min <= MIN_DYNAMIC_RANGE) {
                     average = min >> 1;
 
                     if (y > 0 && x > 0) {
@@ -124,24 +125,24 @@ public class HybridBinarizer {
     }
 
 
-    private static void CalculateThresholdForBlock(byte[] grayImage, int subWidth, int subHeight, int width,
+    private static void calculateThresholdForBlock(byte[] grayImage, int subWidth, int subHeight, int width,
                                                    int height, int[][] blackPoints, byte[] binImage) {
         for (int y = 0; y < subHeight; y++) {
-            int yOffset = y << BlockSizePower;
-            int maxyOffset = height - BlockSize;
+            int yOffset = y << BLOCK_SIZE_POWER;
+            int maxyOffset = height - BLOCK_SIZE;
             if (yOffset > maxyOffset) {
                 yOffset = maxyOffset;
             }
 
             for (int x = 0; x < subWidth; x++) {
-                int xOffset = x << BlockSizePower;
-                int maxXOffset = width - BlockSize;
+                int xOffset = x << BLOCK_SIZE_POWER;
+                int maxXOffset = width - BLOCK_SIZE;
                 if (xOffset > maxXOffset) {
                     xOffset = maxXOffset;
                 }
 
-                int left = Cap(x, 2, subWidth - 3);
-                int top = Cap(y, 2, subHeight - 3);
+                int left = cap(x, 2, subWidth - 3);
+                int top = cap(y, 2, subHeight - 3);
                 int sum = 0;
                 for (int z = -2; z <= 2; z++) {
                     int[] blackRow = blackPoints[top + z];
@@ -153,27 +154,25 @@ public class HybridBinarizer {
                 }
 
                 int average = sum / 25;
-                ThresholdBlock(grayImage, xOffset, yOffset, average, width, binImage);
+                thresholdBlock(grayImage, xOffset, yOffset, average, width, binImage);
             }
         }
     }
 
-    private static void ThresholdBlock(byte[] grayImage, int xOffset, int yOffset, int threshold, int stride,
+    private static void thresholdBlock(byte[] grayImage, int xOffset, int yOffset, int threshold, int stride,
                                        byte[] binImage) {
         int offset = (yOffset * stride) + xOffset;
         byte grayMin = 0;
         byte grayMax = -1;
-        for (int y = 0; y < BlockSize; y++, offset += stride) {
-            for (int x = 0; x < BlockSize; x++) {
+        for (int y = 0; y < BLOCK_SIZE; y++, offset += stride) {
+            for (int x = 0; x < BLOCK_SIZE; x++) {
                 int pixel = grayImage[offset + x] & 0xff;
-                // Comparison needs to be <= so that black == 0 pixels are black even if the threshold is 0.
-                // matrix[xOffset + x, yOffset + y] = (pixel <= threshold);
                 binImage[offset + x] = pixel <= threshold ? grayMin : grayMax;
             }
         }
     }
 
-    private static int Cap(int value, int min, int max) {
+    private static int cap(int value, int min, int max) {
         return value < min ? min : value > max ? max : value;
     }
 }

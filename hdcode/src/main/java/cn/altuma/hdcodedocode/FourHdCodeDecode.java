@@ -1,5 +1,8 @@
 package cn.altuma.hdcodedocode;
 
+/**
+ * @author Coder_Rain
+ */
 public class FourHdCodeDecode {
     private int[] _codePixs;
     private int _rotateTime; //向右转次数
@@ -39,8 +42,9 @@ public class FourHdCodeDecode {
         _nn = (1 << _mm) - 1;
 
         int kk = _nn - (_tt << 1);
-        if (kk <= 0 || _nn < kk)
+        if (kk <= 0 || _nn < kk) {
             return null;
+        }
 
         if ((_mm != 8 && _mm != 10 && _mm != 12 && _mm != 14 && _mm != 16) || _tt > 1000)
         {
@@ -133,7 +137,7 @@ public class FourHdCodeDecode {
             int rgb = colorPixs[i];
             int r = (rgb >> 16) & 0xff;
             int g = (rgb >> 8) & 0xff;
-            int b = (rgb >> 0) & 0xff;
+            int b = rgb & 0xff;
 
             maxR = maxR < r ? r : maxR;
             maxG = maxG < g ? g : maxG;
@@ -149,7 +153,7 @@ public class FourHdCodeDecode {
             int rgb = colorPixs[i];
             int r = (rgb >> 16) & 0xff;
             int g = (rgb >> 8) & 0xff;
-            int b = (rgb >> 0) & 0xff;
+            int b = rgb & 0xff;
 
             int newR = (r - minR) * 256 / (maxR - minR + 1);
             int newG = (g - minG) * 256 / (maxG - minG + 1);
