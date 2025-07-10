@@ -23,7 +23,7 @@ public class HybridBinarizer {
     /// <param name="height">高度</param>
     /// <returns>二值化图片</returns>
     public static byte[] binarizeEntireImage(int[] rgbImage, int width, int height) {
-        byte[] luminances = GrayDiagram.CalculateLuminanceRgb24(rgbImage);
+        byte[] luminances = GrayDiagram.calculateLuminanceRgb24(rgbImage);
         return binarizeEntireImage(luminances, width, height);
     }
 

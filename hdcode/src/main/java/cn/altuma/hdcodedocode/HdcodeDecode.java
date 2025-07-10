@@ -1,17 +1,14 @@
 package cn.altuma.hdcodedocode;
 
 public class HdcodeDecode {
-	GrayImage grayImage = new GrayImage();
-	NormalImage normalImage = new NormalImage();
 	GrayImage standBinImage;
 
 	TumaCode twoDimensionalCode = new TumaCode();
 	ReadHdcodeInfo readHdInfo = new ReadHdcodeInfo();
 	BinHdCodeDecode binDecode = new BinHdCodeDecode();
 	FourHdCodeDecode fourDecode = new FourHdCodeDecode();
-	EightHdCodeDecode eightDecode = new EightHdCodeDecode();
 
-	public String getWords(int[] pixs, int W, int H, boolean denoise) {
+	public String getWords(int[] pixs, int W, int H, boolean denoise,String hdRulePath) {
 		twoDimensionalCode.normalPixs = pixs;
 		twoDimensionalCode.imageWidth = W;
 		twoDimensionalCode.imageHeight = H;
@@ -21,7 +18,7 @@ public class HdcodeDecode {
 		if (standBinImage == null)
             return null;
 
-        HdcodeInfo hdInfo = readHdInfo.getHdcodeInfo(standBinImage);
+        HdcodeInfo hdInfo = readHdInfo.getHdcodeInfo(standBinImage,hdRulePath);
         if (hdInfo == null)
             return null;
 		if (standBinImage != null) {

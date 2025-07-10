@@ -10,10 +10,12 @@ import com.google.zxing.common.HybridBinarizer;
 import cn.altuma.hdcodedocode.HdcodeDecode;
 
 public class Hdcode {
+
+    public static String hdRulePath;
+
     /**
-     *
      * @param pixels 图片bgra格式像素点数据集合
-     * @param width 宽度
+     * @param width  宽度
      * @param height 高度
      * @return String格式返回值
      */
@@ -28,7 +30,7 @@ public class Hdcode {
         }
 
         HdcodeDecode hdcode = new HdcodeDecode();
-        String result = hdcode.getWords(pixels, width, height, true);
+        String result = hdcode.getWords(pixels, width, height, true, hdRulePath);
         if (result != null) {
             return result;
         } else {
@@ -47,9 +49,8 @@ public class Hdcode {
     }
 
     /**
-     *
-     * @param data 图片yuv420格式像素点数据
-     * @param width 宽度
+     * @param data   图片yuv420格式像素点数据
+     * @param width  宽度
      * @param height 高度
      * @return
      */
@@ -79,7 +80,7 @@ public class Hdcode {
         HdcodeDecode hdcode = new HdcodeDecode();
         int[] rgb = new int[w * h];
         YUV420_2_rgb(rgb, data, w, h);
-        String s = hdcode.getWords(rgb, w, h, denoise);
+        String s = hdcode.getWords(rgb, w, h, denoise, hdRulePath);
         return s;
     }
 

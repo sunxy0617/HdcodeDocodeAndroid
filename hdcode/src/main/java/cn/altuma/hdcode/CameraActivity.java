@@ -30,6 +30,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 
 public class CameraActivity extends AppCompatActivity implements Camera.PreviewCallback {
     private static final String TAG = "CameraActivity";
@@ -67,11 +69,12 @@ public class CameraActivity extends AppCompatActivity implements Camera.PreviewC
         });
 
         initPermission();
+
+        Hdcode.hdRulePath = Objects.requireNonNull(this.getExternalFilesDir(null)).getAbsolutePath();
     }
 
-    private void  initPermission(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
+    private void initPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String[] permissions = new String[]{Manifest.permission.CAMERA,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -94,7 +97,7 @@ public class CameraActivity extends AppCompatActivity implements Camera.PreviewC
         }
     }
 
-    private void initSoundPool(){
+    private void initSoundPool() {
         if (Build.VERSION.SDK_INT >= 21) {
             SoundPool.Builder builder = new SoundPool.Builder();
             //传入音频的数量
@@ -186,9 +189,9 @@ public class CameraActivity extends AppCompatActivity implements Camera.PreviewC
             camera.release();
             cameraIsRun = false;
 
-            if(soundPool!=null){
+            if (soundPool != null) {
                 soundPool.release();
-                soundPool=null;
+                soundPool = null;
             }
         }
     }
@@ -251,7 +254,7 @@ public class CameraActivity extends AppCompatActivity implements Camera.PreviewC
                 int length = w * h;
                 int[] pixs = new int[length];
                 bmp.getPixels(pixs, 0, w, 0, 0, w, h);
-                String result =Hdcode.decodeImagePixels(pixs,w,h);
+                String result = Hdcode.decodeImagePixels(pixs, w, h);
 
                 if (result != null) {
                     decodeSuccess(result);
@@ -259,7 +262,7 @@ public class CameraActivity extends AppCompatActivity implements Camera.PreviewC
             }
 
         } catch (Exception e) {
-            Log.e(TAG, "onActivityResult: " +e.toString());
+            Log.e(TAG, "onActivityResult: " + e.toString());
             Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -280,13 +283,14 @@ public class CameraActivity extends AppCompatActivity implements Camera.PreviewC
     }
 
     boolean isSuccess = false;
+
     private void decodeSuccess(String result) {
         if (isSuccess)
             return;
         if (result != null) {
             isSuccess = true;
-            if(soundPool!=null)
-            soundPool.play(soundId,1,1,0,0,1);
+            if (soundPool != null)
+                soundPool.play(soundId, 1, 1, 0, 0, 1);
             CloseCamera();
             message = result;
             runOnUiThread(new Runnable() {

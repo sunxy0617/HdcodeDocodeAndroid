@@ -2,6 +2,9 @@ package cn.altuma.hdcodedocode;
 
 import cn.altuma.hdcodedocode.binarizer.HybridBinarizer;
 
+/**
+ * @author Coder_Rain
+ */
 public class TumaCode {
     final int maxWidth = 150;
     int[] normalPixs;
@@ -15,8 +18,15 @@ public class TumaCode {
     int[] rightup = new int[2];
     int[] leftdown = new int[2];
     int[] rightdown = new int[2];
-    int[] LocationWidth = new int[4];// 四个定位点的宽度，顺序左上，右上，左下，右下
-    int[] LocationHeight = new int[4];// 四个定位点的高度，顺序左上，右上，左下，右下
+
+    /**
+     * 四个定位点的宽度，顺序左上，右上，左下，右下
+     */
+    int[] LocationWidth = new int[4];
+    /**
+     * 四个定位点的高度，顺序左上，右上，左下，右下
+     */
+    int[] LocationHeight = new int[4];
 
     NormalImage StandardCode = new NormalImage();
 
@@ -31,17 +41,21 @@ public class TumaCode {
 
     boolean MakeStandardCode(boolean denoise) {
 
-        _binPixs =ConventToBinImage(normalPixs, imageWidth, imageHeight);
+        _binPixs = ConventToBinImage(normalPixs, imageWidth, imageHeight);
 
         if (denoise) {
             Denoise(_binPixs, imageWidth, imageHeight);
         }
-        if (!searchAllLocation())// 20190221添加
+        if (!searchAllLocation())
         {
             return false;
         }
-        if (leftup[0] == 0 || leftdown[0] == 0 || rightup[0] < leftup[0] + 20 || rightdown[0] < leftdown[0] + 20)// 寻找定位点失败，返回
+
+        // 寻找定位点失败，返回
+        if (leftup[0] == 0 || leftdown[0] == 0 || rightup[0] < leftup[0] + 20 || rightdown[0] < leftdown[0] + 20)
+        {
             return false;
+        }
         int standardWidthUp = getWidth(leftup, rightup, LocationWidth[0], LocationWidth[1]);
         int standardWidthDown = getWidth(leftdown, rightdown, LocationWidth[2], LocationWidth[3]);
         int standardHeightLeft = getHeight(leftup, leftdown, LocationHeight[0], LocationHeight[2]);
@@ -56,23 +70,30 @@ public class TumaCode {
         min = min < standardHeightLeft ? min : standardHeightLeft;
         min = min < standardHeightRight ? min : standardHeightRight;
 
-        if (min == -1)// 返回-1说明定位点有误
+        // 返回-1说明定位点有误
+        if (min == -1) {
             return false;
+        }
 
+        // 去掉最大值和最小值，使求边长误差更小
         standardCodeWidth = (standardWidthUp + standardWidthDown + standardHeightLeft + standardHeightRight - max
-                - min) >> 1;// 去掉最大值和最小值，使求边长误差更小
+                - min) >> 1;
 
-        if (standardCodeWidth < 40)// 20190220添加
+        if (standardCodeWidth < 40) {
             return false;
+        }
 
-        int lastNum = standardCodeWidth % 10;// 个位数字
+        // 个位数字
+        int lastNum = standardCodeWidth % 10;
         int temp = standardCodeWidth / 10;
-        if (lastNum > 4)
+        if (lastNum > 4) {
             temp += 1;
+        }
         standardCodeWidth = temp * 10;
-
-        if (standardCodeWidth <= 0 || standardCodeWidth > maxWidth)// 高和宽计算有误，返回
+        // 高和宽计算有误，返回
+        if (standardCodeWidth <= 0 || standardCodeWidth > maxWidth) {
             return false;
+        }
         return calculateStandCode();
     }
 
@@ -106,20 +127,22 @@ public class TumaCode {
                 {0, 0, 0, x2, y2, 1, -x2 * v2, -y2 * v2, v2}, {x3, y3, 1, 0, 0, 0, -x3 * u3, -y3 * u3, u3},
                 {0, 0, 0, x3, y3, 1, -x3 * v3, -y3 * v3, v3}, {x4, y4, 1, 0, 0, 0, -x4 * u4, -y4 * u4, u4},
                 {0, 0, 0, x4, y4, 1, -x4 * v4, -y4 * v4, v4}};
-
-        Gauss(n, juzhen, xishu);// 高斯消元法，解方程组
+        // 高斯消元法，解方程组
+        gauss(n, juzhen, xishu);
 
         int x, y;
         double a, b;
-        int[] pixOut = new int[standardCodeWidth * standardCodeWidth];// 用于输出的还原后的图片图片数组
+        // 用于输出的还原后的图片图片数组
+        int[] pixOut = new int[standardCodeWidth * standardCodeWidth];
         for (int i = 0; i < standardCodeWidth; i++) {
             b = i + 0.4;
             for (int j = 0; j < standardCodeWidth; j++) {
                 a = j + 0.4;
                 x = (int) ((xishu[0] * a + xishu[1] * b + xishu[2]) / (xishu[6] * a + xishu[7] * b + 1));
                 y = (int) ((xishu[3] * a + xishu[4] * b + xishu[5]) / (xishu[6] * a + xishu[7] * b + 1));
-                if (x < 0 || y < 0 || x > imageWidth - 1 || y > imageHeight - 1)
+                if (x < 0 || y < 0 || x > imageWidth - 1 || y > imageHeight - 1) {
                     return false;
+                }
 
                 pixOut[i * standardCodeWidth + j] = normalPixs[y * imageWidth + x];
             }
@@ -131,33 +154,38 @@ public class TumaCode {
     }
 
     private boolean searchAllLocation() {
-        int w = imageWidth;// 定义拆分后的图片的宽高
+        // 定义拆分后的图片的宽高
+        int w = imageWidth;
         int h = imageHeight;
 
         byte[] pixFirst = _binPixs;
 
         int[] locationWH1 = new int[2];
         int[] location1 = searchEveryLocation(pixFirst, w, h, 0, locationWH1);
-        if (location1[0] * location1[1] == 0)
+        if (location1[0] * location1[1] == 0) {
             return false;
+        }
         removeLocation(location1, tempLocationLength);
 
         int[] locationWH2 = new int[2];
         int[] location2 = searchEveryLocation(pixFirst, w, h, location1[1], locationWH2);
-        if (location2[0] * location2[1] == 0)
+        if (location2[0] * location2[1] == 0) {
             return false;
+        }
         removeLocation(location2, tempLocationLength);
 
         int[] locationWH3 = new int[2];
         int[] location3 = searchEveryLocation(pixFirst, w, h, location2[1], locationWH3);
-        if (location3[0] * location3[1] == 0)
+        if (location3[0] * location3[1] == 0) {
             return false;
+        }
         removeLocation(location3, tempLocationLength);
 
         int[] locationWH4 = new int[2];
         int[] location4 = searchEveryLocation(pixFirst, w, h, location3[1], locationWH4);
-        if (location4[0] * location4[1] == 0)
+        if (location4[0] * location4[1] == 0) {
             return false;
+        }
         removeLocation(location4, tempLocationLength);
 
         int centreX = location1[0] + location2[0] + location3[0] + location4[0] >> 2;
@@ -211,7 +239,7 @@ public class TumaCode {
                     int bin2 = imageWidth * j;
                     bin2 += x;
 
-                    for (int j2 = j + 1; j2 < h; j2++) {
+                    for (int j2 = j + 1; j2 < h2; j2++) {
                         bin2 += imageWidth;
                         if (p[bin2] == p[bin2 - imageWidth]) {
                             count2++;
@@ -241,24 +269,30 @@ public class TumaCode {
 
     private int getWidth(int[] locationLeft, int[] locationRight, int locationWidthLeft, int locationWidthRight)// 求出原图形宽度
     {
-        long x = locationRight[0] - locationLeft[0];// 数字经过乘法运算后过大，可能超出int范围，因此使用long
+        // 数字经过乘法运算后过大，可能超出int范围，因此使用long
+        long x = locationRight[0] - locationLeft[0];
         long y = locationRight[1] - locationLeft[1];
         int locationWidth = (locationWidthLeft + locationWidthRight) >> 1;
-        if (x == 0)
+        if (x == 0) {
             return -1;
-        int width = (int) ((9216 * (x * x + y * y) / (locationWidth * x) + 9216) >> 10);// 9216=9<<10，放大
+        }
+        // 9216=9<<10，放大
+        int width = (int) ((9216 * (x * x + y * y) / (locationWidth * x) + 9216) >> 10);
         // 避免浮点
         return width;
     }
 
     private int getHeight(int[] locationUp, int[] locationDown, int locationWidthUp, int locationWidthDown)// 求出原图形高度
     {
-        long x = locationDown[0] - locationUp[0];// 数字经过乘法运算后过大，可能超出int范围，因此使用long
+        // 数字经过乘法运算后过大，可能超出int范围，因此使用long
+        long x = locationDown[0] - locationUp[0];
         long y = locationDown[1] - locationUp[1];
         int locationHeight = (locationWidthUp + locationWidthDown) >> 1;
-        if (y == 0)
+        if (y == 0) {
             return -1;
-        int height = (int) ((9216 * (x * x + y * y) / (locationHeight * y) + 9216) >> 10);// 9216=9<<10，放大
+        }
+        // 9216=9<<10，放大
+        int height = (int) ((9216 * (x * x + y * y) / (locationHeight * y) + 9216) >> 10);
         // 避免浮点
         return height;
     }
@@ -272,10 +306,11 @@ public class TumaCode {
     private int searchOnLine(int[] num, int length)// 根据比例1:1:2:1:2:1:1返回中心坐标
     {
         int l = 0;
-        if (num.length > 6)
+        if (num.length > 6) {
             l = num[0] + num[1] + num[2];
-        else
+        } else {
             return -1;
+        }
         for (int i = 3; i < length - 3; i++) {
             if (judge(num, i)) {
                 return l;
@@ -474,31 +509,35 @@ public class TumaCode {
         GrayImage binCode = new GrayImage();
         binCode.Width = StandardCode.Width;
         binCode.Height = StandardCode.Height;
-        binCode.Pixs=ConventToBinImage(StandardCode.Pixs,  StandardCode.Width, StandardCode.Height);
+        binCode.Pixs = ConventToBinImage(StandardCode.Pixs, StandardCode.Width, StandardCode.Height);
         return binCode;
     }
 
 
-    private void Gauss(int n, double[][] a, double[] x)// 高斯消元法解方程组,n为未知数个数，a为方程组增广矩阵
+    private void gauss(int n, double[][] a, double[] x)// 高斯消元法解方程组,n为未知数个数，a为方程组增广矩阵
     {
         double d;
 
         // 消元
         for (int k = 0; k < n; k++) {
-            selectMainElement(n, k, a); // 选择主元素
+            // 选择主元素
+            selectMainElement(n, k, a);
 
             // for (int j = k; j <= n; j++ ) a[k, j] = a[k, j] / a[k, k];
             // 若将下面两个语句改为本语句，则程序会出错，因为经过第1次循环
             // 后a[k,k]=1，a[k,k]的值发生了变化，所以在下面的语句中先用d
             // 将a[k,k]的值保存下来
             d = a[k][k];
-            for (int j = k; j <= n; j++)
+            for (int j = k; j <= n; j++) {
                 a[k][j] = a[k][j] / d;
+            }
 
             for (int i = k + 1; i < n; i++) {
-                d = a[i][k]; // 这里使用变量d将a[i,k]的值保存下来的原理与上面注释中说明的一样
-                for (int j = k; j <= n; j++)
+                // 这里使用变量d将a[i,k]的值保存下来的原理与上面注释中说明的一样
+                d = a[i][k];
+                for (int j = k; j <= n; j++) {
                     a[i][j] = a[i][j] - d * a[k][j];
+                }
             }
 
         }
@@ -507,8 +546,9 @@ public class TumaCode {
         x[n - 1] = a[n - 1][n];
         for (int i = n - 1; i >= 0; i--) {
             x[i] = a[i][n];
-            for (int j = i + 1; j < n; j++)
+            for (int j = i + 1; j < n; j++) {
                 x[i] = x[i] - a[i][j] * x[j];
+            }
         }
     }
 

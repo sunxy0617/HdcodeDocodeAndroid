@@ -7,7 +7,6 @@ public class BinHdCodeDecode {
     int[] rscode;
     int index;
 
-    HdCodeRules hdCodeRules = new HdCodeRules();
     byte[] pixs;
     public byte[] decode(GrayImage binImage, HdcodeInfo hdcodeInfo)//构造函数
     {

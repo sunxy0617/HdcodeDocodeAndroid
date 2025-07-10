@@ -6,7 +6,6 @@ public class EightHdCodeDecode {
     int mm, tt, nn;
     int[] rscode;
     int index;
-    HdCodeRules hdCodeRules = new HdCodeRules();
 
     int[] pixs;
     public byte[] decode(NormalImage normalImage, HdcodeInfo hdcodeInfo)//构造函数
