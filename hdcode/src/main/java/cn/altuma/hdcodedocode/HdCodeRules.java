@@ -6,15 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Looper;
 import android.util.Base64;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TimeZone;
 
 

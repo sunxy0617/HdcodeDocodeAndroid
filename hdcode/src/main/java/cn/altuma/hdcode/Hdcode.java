@@ -31,57 +31,37 @@ public class Hdcode {
 
         HdcodeDecode hdcode = new HdcodeDecode();
         String result = hdcode.getWords(pixels, width, height, true, hdRulePath);
-        if (result != null) {
-            return result;
-        } else {
+        if (result == null) {
             result = QrDecode(grayPixs, width, height, true);
-            if (result != null) {
-                return result;
-            } else {
+            if (result == null) {
                 result = QrDecode(grayPixs, width, height, false);
-                if (result != null) {
-                    return result;
-                } else {
-                    return null;
-                }
             }
         }
+        return result;
     }
 
     /**
      * @param data   图片yuv420格式像素点数据
      * @param width  宽度
      * @param height 高度
-     * @return
+     * @return 解码结果
      */
     public static String decodeYuv420(byte[] data, int width, int height) {
-        final byte[] mData = data;
-        final int mWidth = width;
-        final int mHeight = height;
-        String result = HdcodeDecode(mData, mWidth, mHeight, false);
-        if (result != null) {
-            return result;
-        } else {
-            result = QrDecode(mData, mWidth, mHeight, true);
-            if (result != null) {
-                return result;
-            } else {
-                result = QrDecode(mData, mWidth, mHeight, false);
-                if (result != null) {
-                    return result;
-                } else {
-                    return null;
-                }
+        String result = HdcodeDecode(data, width, height, false);
+        if (result == null) {
+            result = QrDecode(data, width, height, true);
+            if (result == null) {
+                result = QrDecode(data, width, height, false);
             }
         }
+        return result;
     }
 
     private static String HdcodeDecode(byte[] data, int w, int h, boolean denoise) {
         HdcodeDecode hdcode = new HdcodeDecode();
         int[] rgb = new int[w * h];
         YUV420_2_rgb(rgb, data, w, h);
-        String s = hdcode.getWords(rgb, w, h, denoise, hdRulePath);
-        return s;
+        return hdcode.getWords(rgb, w, h, denoise, hdRulePath);
     }
 
     private static String QrDecode(byte[] data, int w, int h, boolean rotate) {

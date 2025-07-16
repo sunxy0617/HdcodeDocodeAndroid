@@ -1,17 +1,17 @@
 package cn.altuma.hdcodedocode;
 
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.speech.tts.TextToSpeech;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Locale;
 
@@ -36,21 +36,15 @@ public class DetailActivity extends AppCompatActivity {
         butSpeech = findViewById(R.id.butSpeech);
 
 
-        butScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DetailActivity.this, CameraActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
+        butScan.setOnClickListener(v -> {
+            Intent intent = new Intent(DetailActivity.this, CameraActivity.class);
+            startActivityForResult(intent, REQUEST_CODE);
         });
 
-        butSpeech.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = textMessage.getText().toString();
-                if (message != null || message.length() > 0)
-                    textToSpeech.speak(message, textToSpeech.QUEUE_ADD, null);
-            }
+        butSpeech.setOnClickListener(v -> {
+            String message = textMessage.getText().toString();
+            if (message != null || !message.isEmpty())
+                textToSpeech.speak(message, textToSpeech.QUEUE_ADD, null);
         });
 
         if (isOpenByMain) {
@@ -66,6 +60,7 @@ public class DetailActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode==REQUEST_CODE&& resultCode == RESULT_OK) {
+            assert data != null;
             final String message = data.getStringExtra("hdcode");;
             textMessage.setText(message);
 
