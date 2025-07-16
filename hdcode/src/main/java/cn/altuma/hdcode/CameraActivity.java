@@ -12,14 +12,10 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 
+import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -27,6 +23,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,13 +60,10 @@ public class CameraActivity extends AppCompatActivity implements Camera.PreviewC
         centerLayout = findViewById(R.id.centerLayout);
         imgMove = findViewById(R.id.imageMove);
 
-        butOpenAlbum.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(intent, PHOTO_REQUEST_CODE);
-            }
+        butOpenAlbum.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, PHOTO_REQUEST_CODE);
         });
 
         initPermission();
