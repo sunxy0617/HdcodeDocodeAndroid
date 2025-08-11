@@ -20,4 +20,30 @@
         android:background="#063265"
         android:text="开始扫码"
         android:textColor="#ffffffff" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textAbout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="关于通用扫"
+                android:textColor="#ffffff" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/white"/>
+        </LinearLayout>
+    </LinearLayout>
+
 </FrameLayout>
